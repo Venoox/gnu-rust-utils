@@ -1,7 +1,7 @@
 use std::env;
 use std::io::{self, Write};
 
-fn main() -> io::Result<()> {
+fn main() {
     let args: Vec<String> = env::args().skip(1).collect();
     let mut buf: &str = &args.join(" ");
     if buf.is_empty() {
