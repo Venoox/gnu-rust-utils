@@ -21,11 +21,11 @@ fn test_help_message_when_no_argument_passed() -> Result<()> {
 #[test]
 fn test_run_with_not_existing_file() -> Result<()> {
     Command::cargo_bin("touch")?
-        .arg(tmp_file_path("test_file"))
+        .arg(tmp_file_path("test_file1"))
         .assert()
         .success();
-    assert_eq!(true, Path::new(&tmp_file_path("test_file")).exists());
-    fs::remove_file(tmp_file_path("test_file"))?;
+    assert_eq!(true, Path::new(&tmp_file_path("test_file1")).exists());
+    fs::remove_file(tmp_file_path("test_file1"))?;
     Ok(())
 }
 
@@ -38,25 +38,29 @@ fn tmp_file_path<S: Into<String>>(name: S) -> String {
 
 #[test]
 fn test_run_with_existing_file() -> Result<()> {
-    File::create(tmp_file_path("test_file"))?;
+    File::create(tmp_file_path("test_file2"))?;
+    set_time_from_past(tmp_file_path("test_file2"))?;
 
-    let d = SystemTime::now().duration_since(UNIX_EPOCH)?;
-    let seconds = d.as_secs() - 60;
-    let ft = FileTime::from_unix_time(seconds as i64, 0);
-    filetime::set_file_times(tmp_file_path("test_file"), ft, ft)?;
-
-    let (orig_mtime, orig_atime) = times(tmp_file_path("test_file"))?;
+    let (orig_mtime, orig_atime) = times(tmp_file_path("test_file2"))?;
 
     Command::cargo_bin("touch")?
-        .arg(tmp_file_path("test_file"))
+        .arg(tmp_file_path("test_file2"))
         .assert()
         .success();
 
-    let (curr_mtime, curr_atime) = times(tmp_file_path("test_file"))?;
+    let (curr_mtime, curr_atime) = times(tmp_file_path("test_file2"))?;
 
     assert!(orig_atime < curr_atime);
     assert!(orig_mtime < curr_mtime);
-    fs::remove_file(tmp_file_path("test_file"))?;
+    fs::remove_file(tmp_file_path("test_file2"))?;
+    Ok(())
+}
+
+fn set_time_from_past<S: Into<String>>(filepath: S) -> Result<()> {
+    let d = SystemTime::now().duration_since(UNIX_EPOCH)?;
+    let seconds = d.as_secs() - 180;
+    let ft = FileTime::from_unix_time(seconds as i64, 0);
+    filetime::set_file_times(filepath.into(), ft, ft)?;
     Ok(())
 }
 
