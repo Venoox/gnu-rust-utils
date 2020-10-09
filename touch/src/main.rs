@@ -1,33 +1,30 @@
 use anyhow::Result;
 use filetime::FileTime;
-use log::debug;
+use std::env;
 use std::fs::OpenOptions;
-use std::path::PathBuf;
-use structopt::StructOpt;
-
-#[derive(Debug, StructOpt)]
-struct Opt {
-    /// Input file
-    #[structopt(parse(from_os_str))]
-    file: PathBuf,
-}
+use std::path::Path;
+use std::process;
 
 fn main() -> Result<()> {
-    pretty_env_logger::init_timed();
-    debug!("starting touch");
-    let opt = Opt::from_args();
-    debug!("got args: {:#?}", opt);
-    create_if_not_exists(&opt.file)?;
-    set_time(opt.file, FileTime::now())?;
+    let path = env::args().skip(1).next().unwrap_or_else(|| {
+        print_usage();
+        process::exit(1);
+    });
+    create_if_not_exists(&path)?;
+    set_time(path, FileTime::now())?;
     Ok(())
 }
 
-fn create_if_not_exists(file: &PathBuf) -> Result<()> {
+fn print_usage() {
+    println!(r#"usage"#);
+}
+
+fn create_if_not_exists<P: AsRef<Path>>(file: &P) -> Result<()> {
     OpenOptions::new().create(true).write(true).open(file)?;
     Ok(())
 }
 
-fn set_time(p: PathBuf, time: FileTime) -> Result<()> {
+fn set_time<P: AsRef<Path>>(p: P, time: FileTime) -> Result<()> {
     filetime::set_file_times(p, time, time)?;
     Ok(())
 }
