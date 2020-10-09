@@ -1,0 +1,20 @@
+[package]
+name = "touch"
+version = "0.1.0"
+authors = ["Bartosz Zbytniewski <bartosz.zbytniewski.dev@gmail.com>"]
+edition = "2018"
+description = "Touch utility written in rust"
+
+[dependencies]
+anyhow = "1.0.32"
+filetime = "0.2.12"
+
+[dev-dependencies]
+assert_cmd = "1.0.1"
+predicates = "1.0.5"
+
+[profile.release]
+opt-level = "z"
+lto = true
+codegen-units = 1
+panic = "abort"
