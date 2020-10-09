@@ -6,7 +6,7 @@ use std::path::Path;
 use std::process;
 
 fn main() -> Result<()> {
-    let path = env::args().skip(1).next().unwrap_or_else(|| {
+    let path = env::args().nth(1).unwrap_or_else(|| {
         print_usage();
         process::exit(1);
     });
