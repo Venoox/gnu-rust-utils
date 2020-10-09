@@ -16,7 +16,13 @@ fn main() -> Result<()> {
 }
 
 fn print_usage() {
-    println!(r#"usage"#);
+    eprintln!(
+        r#"touch 0.1.0
+touch - change file timestamps
+
+USAGE:
+    touch <file>"#
+    );
 }
 
 fn create_if_not_exists<P: AsRef<Path>>(file: &P) -> Result<()> {
