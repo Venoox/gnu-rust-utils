@@ -1,0 +1,15 @@
+[package]
+name = "mkdir"
+version = "0.1.0"
+authors = ["Rodrigo Oliveira Campos <rodrigo.redcode@gmail.com>"]
+edition = "2018"
+description = "Mkdir utility written in rust"
+
+[dependencies]
+clap = { version = "^2.33.0", features = ["yaml", "wrap_help"] }
+
+[profile.release]
+opt-level = "z"
+lto = true
+codegen-units = 1
+panic = "abort"
